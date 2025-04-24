@@ -26,4 +26,22 @@ class TemplateController extends Controller
     {
         return $this->show_gjs_editor($request, $template);
     }
+
+    public function show(Request $request, Template $template)
+    {
+        $placeholders = [
+            '{{ name }}' => 'Minah',
+            '{{ email }}' => 'minah@gmail.com',
+        ];
+
+        $html = $template->getHtmlAttribute();
+        foreach ($placeholders as $key => $value) {
+            $html = str_replace($key, e($value), $html);
+        }
+
+        return view('pages.show', [
+            'template' => $template,
+            'html' => $html
+        ]);
+    }
 }

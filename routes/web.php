@@ -9,3 +9,5 @@ Route::get('/', function () {
 
 Route::get('pages/{template}/editor', [TemplateController::class, 'editor']);
 
+Route::get('/pages/{template}', [TemplateController::class, 'show']);
+

@@ -6,7 +6,7 @@ return [
     | Expose API
     |--------------------------------------------------------------------------
     |
-    | This will expose the editor variable. 
+    | This will expose the editor variable.
     | It can be accessed via a window.gjsEditor
     |
     */
@@ -15,17 +15,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Routes 
+    | Routes
     |--------------------------------------------------------------------------
     |
     | Routes Settings
     |
     */
-    
+
     'routes' => [
-        'middleware' => [
-            'web', 'auth',
-        ],
+//        'middleware' => [
+//            'web', 'auth',
+//        ],
     ],
 
     /*
@@ -36,7 +36,7 @@ return [
     | @See https://github.com/artf/grapesjs/issues/546
     |
     */
-    
+
     'force_class' => false,
 
     /*
@@ -133,7 +133,7 @@ return [
     |
     | 1. Simplest way
     |   'plugin-name' => 'https://url_to_plugin_script.com'
-    |    
+    |
     | 2. Simple with options (Plugin script will be added to global scrips above)
     |   'plugin-name' => [
     |       //plugin options goes here
@@ -181,7 +181,7 @@ return [
                      * Available options can be found here https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_config.html
                      * Or you can use config builder https://cdn.ckeditor.com/4.14.0/full-all/samples/toolbarconfigurator/index.html
                      */
-                    'options' => [ 
+                    'options' => [
                         'toolbarGroups' => [
                             [ "name" => "document", "groups" => [ "mode", "document", "doctools" ] ],
                             [ "name" => "clipboard", "groups" => [ "clipboard", "undo" ] ],
