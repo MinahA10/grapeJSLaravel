@@ -68,6 +68,6 @@ class TemplateController extends Controller
 
     public function load(Template $template)
     {
-        return response()->json(['project' => $template->data ?? []]);
+        return response()->json(['project' => $template->gjs_data ?? []]);
     }
 }

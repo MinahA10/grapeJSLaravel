@@ -11,4 +11,4 @@ Route::post('/grapesjs/assets/upload', [AssetController::class, 'upload']);
 Route::delete('/grapesjs/assets/delete', [AssetController::class, 'delete']);
 
 Route::post('/grapesjs/{template}/save', [TemplateController::class, 'save']);
-Route::get('/grapesjs/load', [TemplateController::class, 'load']);
+Route::get('/grapesjs/{template}/load', [TemplateController::class, 'load']);
