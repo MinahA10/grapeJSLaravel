@@ -15,16 +15,25 @@ class TemplateController extends Controller
         $validated = $request->validate([
             'type' => 'required|string',
             'name' => 'required|string',
-            'is_active' => 'required|boolean',
-            'contents' => 'required|string',
+            'is_active' => 'required|boolean'
         ]);
 
         $template = Template::create($validated);
         return response()->json($template, 201);
     }
+
     public function editor(Request $request, Template $template)
     {
         return $this->show_gjs_editor($request, $template);
+    }
+
+    public function getTemplates(){
+        $templates = Template::where('is_active', true)->get();
+        //return response()->json($templates);
+
+        return view('pages.list', [
+            'templates' => $templates,
+        ]);
     }
 
     public function show(Request $request, Template $template)
@@ -43,5 +52,22 @@ class TemplateController extends Controller
             'template' => $template,
             'html' => $html
         ]);
+    }
+
+    public function save(Template $template,Request $request)
+    {
+        $data = $request->input('project');
+        $template->update([
+            'type' => 'badge',
+            'name' => 'test',
+            'is_active' => true,
+            'data' => $data
+        ]);
+        return response()->json(['message' => 'Saved']);
+    }
+
+    public function load(Template $template)
+    {
+        return response()->json(['project' => $template->data ?? []]);
     }
 }

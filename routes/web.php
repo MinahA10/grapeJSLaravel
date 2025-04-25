@@ -8,6 +8,6 @@ Route::get('/', function () {
 });
 
 Route::get('pages/{template}/editor', [TemplateController::class, 'editor']);
-
-Route::get('/pages/{template}', [TemplateController::class, 'show']);
+Route::get('/list/templates', [TemplateController::class, 'getTemplates']);
+Route::get('/pages/{template}', [TemplateController::class, 'show'])->name('template.show');
 

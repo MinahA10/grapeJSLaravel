@@ -18,7 +18,7 @@ class Template extends Model implements Editable
 
     protected $keyType = 'string';
 
-    protected $fillable = ['gjs_data'];
+    protected $fillable = ['data'];
     public static function boot()
     {
         parent::boot();

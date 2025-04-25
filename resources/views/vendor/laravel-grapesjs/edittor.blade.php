@@ -17,6 +17,15 @@
             margin: 0;
             padding: 0;
         }
+
+        .qvct-place {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+        }
     </style>
     <script>
         window.editorConfig = @json($editorConfig ?? []);
@@ -71,7 +80,40 @@
                     },
                 }
             }
-        })
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = grapesjs.init(window.editorConfig || {
+                container: '#editor',
+                height: '100vh',
+                fromElement: false,
+                storageManager: false,
+            });
+            editor.BlockManager.add('image-superposable', {
+                label: 'Image superposable',
+                category: 'Images',
+                content: {
+                    type: 'image',
+                    style: {
+                        width: '200px',
+                        height: 'auto',
+                        position: 'absolute',
+                        top: '20px',
+                        left: '20px',
+                        zIndex: 1,
+                    },
+                    attributes: {
+                        src: 'https://via.placeholder.com/200x150',
+                    }
+                }
+            });
+            editor.StyleManager.addProperty('extra', {
+                name: 'Z-Index',
+                property: 'z-index',
+                type: 'integer',
+                defaults: 1,
+            });
+        });
     </script>
 </head>
 
