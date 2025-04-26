@@ -9,15 +9,15 @@ class AssetController extends Controller
 {
     public function upload(Request $request)
     {
-        $urls = [];
-        
-        foreach ($request->file('files') as $file) {
-
-            $path = $file->store('assets', 'public');
-            $urls[] = ['src' => asset('storage/' . $path)];
+        $url = [];
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('assets', 'public'); 
+                $url[] = ['src' => asset('storage/' . $path)]; 
+            }
         }
 
-        return response()->json($urls);
+        return response()->json($url);
     }
 
     public function delete(Request $request)
