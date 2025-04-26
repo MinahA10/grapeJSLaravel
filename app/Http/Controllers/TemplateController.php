@@ -57,17 +57,21 @@ class TemplateController extends Controller
     public function save(Template $template,Request $request)
     {
         $data = $request->input('project');
+
         $template->update([
             'type' => 'badge',
             'name' => 'test',
             'is_active' => true,
             'data' => $data
         ]);
-        return response()->json(['message' => 'Saved']);
+
+        return response()->json(['message' => 'Saved', 'template' => $template], 200);
     }
 
     public function load(Template $template)
     {
-        return response()->json(['project' => $template->gjs_data ?? []]);
+        $data = $template->data ? json_decode($template->data, true) : [];
+
+        return response()->json(['project' => $data]);
     }
 }
