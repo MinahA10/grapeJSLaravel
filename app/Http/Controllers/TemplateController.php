@@ -74,4 +74,11 @@ class TemplateController extends Controller
 
         return response()->json(['project' => $data]);
     }
+
+    public function getList(): \Illuminate\Http\JsonResponse
+    {
+        $templates = Template::all();
+
+        return response()->json(['templates' => $templates]);
+    }
 }
