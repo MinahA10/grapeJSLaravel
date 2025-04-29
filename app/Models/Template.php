@@ -23,6 +23,7 @@ class Template extends Model implements Editable
         'name',
         'is_active',
         'data',
+        'content'
     ];
     public static function boot()
     {
