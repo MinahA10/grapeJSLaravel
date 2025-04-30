@@ -22,8 +22,8 @@ class Template extends Model implements Editable
         'type',
         'name',
         'is_active',
-        'data',
-        'content'
+        'gjs_data',
+        'contents'
     ];
     public static function boot()
     {

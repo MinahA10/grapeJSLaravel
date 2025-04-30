@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Template;
-use Dotlogics\Grapesjs\App\Traits\EditorTrait;
+use App\Services\TemplateService;
 use Illuminate\Http\Request;
 use Spatie\Browsershot\Browsershot;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Symfony\Component\Process\Process;
 
 class TemplateController extends Controller
 {
-    use EditorTrait;
+
+    protected $templateService;
+
+    public function __construct(TemplateService $templateService)
+    {
+        $this->templateService = $templateService;
+    }
 
     public function store(Request $request)
     {
@@ -25,15 +29,9 @@ class TemplateController extends Controller
         return response()->json($template, 201);
     }
 
-    public function editor(Request $request, Template $template)
-    {
-        return $this->show_gjs_editor($request, $template);
-    }
-
     public function getTemplates()
     {
         $templates = Template::where('is_active', true)->get();
-        //return response()->json($templates);
 
         return view('pages.list', [
             'templates' => $templates,
@@ -64,11 +62,8 @@ class TemplateController extends Controller
         $content = $request->input('content');
 
         $template->update([
-            'type' => 'badge',
-            'name' => 'test',
-            'is_active' => true,
-            'data' => $data,
-            'content' => $content
+            'gjs_data' => $data,
+            'contents' => $content
         ]);
 
         return response()->json(['message' => 'Saved', 'template' => $template], 200);
@@ -88,15 +83,17 @@ class TemplateController extends Controller
         return response()->json(['templates' => $templates]);
     }
 
-    public function generatContentPdf(Template $template)
+    public function generateBadge(Template $template)
     {
-        $content = $template->content;
+        $content = $template->contents;
+
+        //$data = $template->data ? json_decode($template->data, true) : [];
 
         $placeholders = [
             '{{firstname}}' => 'ANTETOKOUNMPO',
             '{{lastname}}' => 'Giannis',
             '{{qrcode}}' => 'https://netbyus.com/assets/images/nbu_logo_white.png',
-            '{{society}}' => 'Netbyus',
+            '{{society}}' => 'NETBYUS',
             '{{logo}}' => 'http://localhost:8000/storage/assets/STY6EbAHVKrJ1tntqkgZsJ8KdA6TOIfL6gLyJzYo.png'
         ];
 
@@ -105,28 +102,15 @@ class TemplateController extends Controller
             $html = str_replace($key, e($value), $html);
         }
 
-        $html = preg_replace_callback('/<img[^>]+src=["\'](http:\/\/localhost:8000\/storage\/[^"\']+)["\']/i', function ($matches) {
-            $url = $matches[1];
-    
-            $relativePath = str_replace('http://localhost:8000/storage/', '', $url);
-            $filePath = public_path('storage/' . $relativePath);
-    
-            if (file_exists($filePath)) {
-                $mimeType = mime_content_type($filePath);
-                $base64 = base64_encode(file_get_contents($filePath));
-                return str_replace($url, "data:$mimeType;base64,$base64", $matches[0]);
-            }
-    
-            return $matches[0]; 
-        }, $html);
+        $html = $this->templateService->convertImagesToBase64($html);
 
         $path = storage_path("app/public/badge_{$template->id}.pdf");
 
         Browsershot::html($html)
-        ->setOption('width', 300) 
-        ->setOption('height', 450) 
+        ->setOption('width', 576) 
+        ->setOption('height', 576) 
         ->margins(0, 0, 0, 0) 
-            ->save($path);
+        ->save($path);
 
         return response()->download($path);
     }
