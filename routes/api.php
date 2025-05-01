@@ -13,3 +13,5 @@ Route::delete('/grapesjs/assets/delete', [AssetController::class, 'delete']);
 Route::post('/grapesjs/{template}/save', [TemplateController::class, 'save']);
 Route::get('/grapesjs/{template}/load', [TemplateController::class, 'load']);
 Route::get('/get/templates/list', [TemplateController::class, 'getList']);
+
+Route::get('/send/templates', [TemplateController::class, 'sendEmail']);

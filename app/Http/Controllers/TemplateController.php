@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TemplateEmailMail;
 use App\Models\Template;
 use App\Services\TemplateService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Browsershot\Browsershot;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Mail;
+use Spatie\Mjml\Mjml;
 
 class TemplateController extends Controller
 {
@@ -56,17 +62,29 @@ class TemplateController extends Controller
         ]);
     }
 
-    public function save(Template $template, Request $request)
+    public function save(Template $template,Request $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->input('project');
         $content = $request->input('content');
 
-        $template->update([
-            'gjs_data' => $data,
-            'contents' => $content
-        ]);
+        try{
+            DB::beginTransaction();
 
-        return response()->json(['message' => 'Saved', 'template' => $template], 200);
+            $template->update([
+                'type' => 'email',
+                //'name' => 'test',
+                'is_active' => true,
+                'gjs_data' => $data,
+                'contents' => $content
+            ]);
+
+            DB::commit();
+
+            return response()->json(['message' => 'Saved']);
+        }catch (\Exception $e){
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()]);
+        }
     }
 
     public function load(Template $template)
@@ -107,11 +125,38 @@ class TemplateController extends Controller
         $path = storage_path("app/public/badge_{$template->id}.pdf");
 
         Browsershot::html($html)
-        ->setOption('width', 576) 
-        ->setOption('height', 576) 
-        ->margins(0, 0, 0, 0) 
+        ->setOption('width', 576)
+        ->setOption('height', 576)
+        ->margins(0, 0, 0, 0)
         ->save($path);
 
         return response()->download($path);
     }
+
+    public function sendEmail(Request $request)
+    {
+        $template = Template::find('bc194220-236d-4ea2-972b-74a9b90a644d');
+        $subject = 'Test invitation';
+        $content = $template->contents;
+
+        $placeholders = [
+            '{{name}}' => 'ANTETOKOUNMPO',
+        ];
+
+        $html = $content;
+        foreach ($placeholders as $key => $value) {
+            $html = str_replace($key, e($value), $html);
+        }
+
+        $html = $this->templateService->convertImagesToBase64($html);
+
+        try{
+            Mail::to('destinataire@example.com')->send(new TemplateEmailMail($subject, $html));
+            return response()->json(['message' => 'Email envoyé avec succès']);
+
+        }catch (\Exception $exception){
+            dd($exception->getMessage());
+        }
+    }
+
 }
